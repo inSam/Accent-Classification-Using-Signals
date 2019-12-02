@@ -64,7 +64,9 @@ if __name__ == '__main__':
         logger.info(" Generating MFCC...")
         train_X = pool.map(partial(to_mfcc, sr=args.sampling_rate), train_X)
         test_X = pool.map(partial(to_mfcc, sr=args.sampling_rate), test_X)
-        pickle.dump([train_X, test_X], open('test_mfcc.dump', 'wb'))
+        pickle.dump(train_X, open('train_mfcc.dump', 'wb'))
+        pickle.dump(test_X, open('test_mfcc.dump', 'wb'))
     else:
         train_Y, test_Y = pickle.load(open('train_labels.dump', 'rb'))
-        train_X, test_X = pickle.load(open('test_mfcc.dump', 'rb'))
+        train_X = pickle.load(open('train_mfcc.dump', 'rb'))
+        test_X = pickle.load(open('test_mfcc.dump', 'rb'))
