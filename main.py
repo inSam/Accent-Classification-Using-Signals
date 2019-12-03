@@ -3,6 +3,7 @@ import multiprocessing
 import pickle
 
 import librosa
+import torch
 import pandas as pd
 import numpy as np
 
@@ -29,6 +30,17 @@ def get_audio(language_num, sr):
 def to_mfcc(audio, sr):
     return librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=13, hop_length=int(sr * 25/1000),
                                 win_length=int(sr * 25/1000 / 4))
+
+
+def make_chunks(mfccs, labels, window_size=64, stride=32):
+    chunk = []
+    chunk_labels = []
+    for mfcc, label in zip(mfccs, labels):
+        # (W - F + 2P)/S + 1
+        for start in range(0, int((mfcc.shape[1] - window_size)/stride)+1): 
+            chunk.append(mfcc[:, start * stride:(start * stride + window_size)])
+            chunk_labels.append(label)
+    return(chunk, chunk_labels)
 
 
 if __name__ == '__main__':
@@ -70,3 +82,14 @@ if __name__ == '__main__':
         train_Y, test_Y = pickle.load(open('train_labels.dump', 'rb'))
         train_X = pickle.load(open('train_mfcc.dump', 'rb'))
         test_X = pickle.load(open('test_mfcc.dump', 'rb'))
+
+    train_X, train_Y = make_chunks(train_X, train_Y)
+    test_X, test_Y = make_chunks(test_X, test_Y)
+
+    args.gpu_ids = []
+    if torch.cuda.is_available():
+        args.gpu_ids += [gpu_id for gpu_id in range(torch.cuda.device_count())]
+        device = torch.device('cuda:{}'.format(args.gpu_ids[0]))
+        torch.cuda.set_device(device)
+    else:
+        device = torch.device('cpu')
