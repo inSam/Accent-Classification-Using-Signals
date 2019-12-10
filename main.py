@@ -28,8 +28,9 @@ def get_audio(language_num, sr):
 
 
 def to_mfcc(audio, sr):
-    return librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=13, hop_length=int(sr * 25/1000),
-                                win_length=int(sr * 25/1000 / 4))
+	frame_length = int(sr * 30 / 1000)
+	hop_length = int(frame_length / 4)
+	return librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=13, hop_length=hop_length, win_length=frame_length)
 
 
 def make_chunks(mfccs, labels, window_size=64, stride=32):

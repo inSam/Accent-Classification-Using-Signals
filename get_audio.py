@@ -48,7 +48,7 @@ class GetAudio:
                 sound = AudioSegment.from_mp3(filename)
                 sound.export('../' + self.destination_folder + "{}.wav".format(lang_num), format="wav")
                 counter += 1
-
+            print('finishing ' + lang_num)
         return counter
 
 if __name__ == '__main__':
