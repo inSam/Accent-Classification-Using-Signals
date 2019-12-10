@@ -1,0 +1,6 @@
+each csv file stores spectrogram of one audio sample.
+the size of csv file is 192*12160 and the spectrogram is 64*12160
+the first 64 rows correspond to the first channel of image
+the second 64 rows correspond to the second channel of image
+the third 64 rows correspond to the third channel of image
+
